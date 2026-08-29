@@ -49,18 +49,21 @@
         </div>
         <div class="timer-chip" id="timer">60:00</div>
     </div>
-    <div class="tabs">
-        <div class="tab" id="tab-6" onclick="jumpToSection('6')">Reasoning</div>
-        <div class="tab" id="tab-18" onclick="jumpToSection('18')">GK</div>
-        <div class="tab" id="tab-17" onclick="jumpToSection('17')">Maths</div>
-        <div class="tab" id="tab-7" onclick="jumpToSection('7')">English</div>
+    <div class="tabs" id="tab-bar">
+        <div class="tab" onclick="jumpToSection('6')">Reasoning</div>
+        <div class="tab" onclick="jumpToSection('18')">GK</div>
+        <div class="tab" onclick="jumpToSection('17')">Maths</div>
+        <div class="tab" onclick="jumpToSection('7')">English</div>
     </div>
-    <div class="content">
+    <div class="content" id="main-content">
         <div class="glass-card">
-            <div id="q-counter" style="font-size:12px; color:#777; margin-bottom:10px; font-weight:700"></div>
-            <div class="q-text" id="q-display"></div>
+            <div id="q-counter" style="font-size:12px; color:#777; margin-bottom:10px; font-weight:700">Question 1 of 5</div>
+            <div class="q-text" id="q-display">Loading questions...</div>
             <div class="options-group" id="options-display"></div>
-            <div class="solution-box" id="solution-display"><strong>Solution:</strong> <div id="sol-content"></div></div>
+            <div class="solution-box" id="solution-display">
+                <strong style="display:block; margin-bottom:10px; font-size:16px; color:#1b5e20">Solution & Explanation:</strong>
+                <div id="sol-content"></div>
+            </div>
         </div>
     </div>
     <div class="fab" onclick="togglePalette()">P</div>
@@ -71,21 +74,92 @@
     </div>
     <div class="palette-overlay" id="p-overlay" onclick="togglePalette()"></div>
     <div class="palette-drawer" id="p-drawer">
-        <h3>Palette</h3>
+        <h3>Question Palette</h3>
         <div class="grid" id="p-grid"></div>
-        <button class="btn btn-primary" style="width:100%; margin-top:30px" onclick="submitTest()">Submit Test</button>
+        <button class="btn btn-primary" style="width:100%; margin-top:30px" onclick="submitTest()">Final Submit</button>
     </div>
     <div class="result-view" id="result-screen">
-        <h2>Result</h2>
-        <div style="font-size:48px; font-weight:900; color:var(--primary)" id="final-score">0</div>
-        <div id="stats-text" style="margin-top:20px"></div>
-        <button class="btn btn-primary" style="margin-top:40px; width:200px" onclick="reviewMode()">Review</button>
+        <h2 style="color:var(--primary)">Test Summary</h2>
+        <div style="font-size:40px; font-weight:900; color:var(--primary); margin:20px 0" id="final-score">0</div>
+        <div id="stats-text" style="font-weight:500; color:#666"></div>
+        <button class="btn btn-primary" style="margin-top:40px; width:200px" onclick="reviewMode()">Review Solutions</button>
     </div>
     <script>
         const questions = [];
-        // Extracting data from source...
-        // I will provide the script to read the source file content and push to this array dynamically.
-        // For now, I'll write the questions that I successfully read from your file.
+        questions.push({
+            id: "1",
+            section: "6",
+            question_en: "<p>1. In a certain code language, <br>&lsquo;A + B&rsquo; means &lsquo;A is the sister of B&rsquo;, <br>&lsquo;A &ndash; B&rsquo; means &lsquo;A is the brother of B&rsquo;, <br>&lsquo;A &times; B&rsquo; means &lsquo;A is the father of B&rsquo;, <br>&lsquo;A &divide; B&rsquo; means &lsquo;A is the wife of B&rsquo;. <br>Based on the above, how is P related to T if &lsquo;P + Q &divide; R &times; S &minus; T&rsquo;?</p>",
+            question_hi: "<p>1. एक निश्चित कूट भाषा में, <br>A + B का अर्थ है, A, B की बहन है\', <br>A - B का अर्थ है, A, B का भाई है\', <br>A &times; B का अर्थ है, A, B के पिता है\', <br>A &divide; B का अर्थ है, A, B की पत्नी है\'।<br>उपरोक्त के आधार पर, यदि \'P + Q &divide; R &times; S - T\' है, तो P, T से किस प्रकार संबंधित है?</p>",
+            options_en: ["<p>Father&rsquo;s sister</p>", "<p>Mother&rsquo;s sister</p>", "<p>Sister</p>", "<p>Mother</p>"],
+            options_hi: ["<p>पिता की बहन</p>", "<p>माँ की बहन</p>", "<p>बहन</p>", "<p>माँ</p>"],
+            solution_en: "<p>1.(b)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1738991568786.png\" alt=\"rId4\" width=\"298\" height=\"145\"><br>P is the sister of T&rsquo;s mother.</p>",
+            solution_hi: "<p>1.(b)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1738991568786.png\" alt=\"rId4\" width=\"298\" height=\"145\"><br>P, T की माँ की बहन है।</p>",
+            correct: "b", pos_marks: 2.0, neg_marks: 0.5
+        });
+        questions.push({
+            id: "2",
+            section: "6",
+            question_en: "<p>2. In this question, three statements are given, followed by three conclusions numbered&nbsp;I, II and III. Assuming the statements to be true, even if they seem to be at variance&nbsp;with commonly known facts, decide which of the conclusion(s) logically follows/follow<br>from the statements.<br><strong>Statements:</strong><br>Some carrots are onions.<br>All onions are potatoes.<br>All potatoes are radish.<br><strong>Conclusions:</strong><br>I. Some carrots are radish.<br>II. All onions are radish.<br>III. No carrot is a potato.</p>",
+            question_hi: "<p>2. इस प्रश्न में तीन कथन दिए गए हैं, जिनके बाद तीन निष्कर्ष I, II और III दिए गए हैं। कथनों को सत्य&nbsp;मानते हुए भले ही वे सामान्य रूप से ज्ञात तथ्यों से अलग प्रतीत होते हों, निर्धारित करें कि कौन-सा/से&nbsp;निष्कर्ष दिए गए कथनों का तार्किक रूप से अनुसरण करता है/करते हैं।<br><strong>कथन:</strong><br>कुछ गाजर, प्याज हैं।<br>सभी प्याज, आलू हैं।<br>सभी आलू, मूली हैं।<br><strong>निष्कर्ष:</strong><br>I. कुछ गाजर, मूली हैं।<br>II. सभी प्याज, मूली हैं।<br>III. कोई गाजर, आलू नहीं है।</p>",
+            options_en: ["<p>Only conclusion II follows.</p>", "<p>Both conclusions I and II follow.</p>", "<p>Only conclusion III follows.</p>", "<p>Only conclusion I follows.</p>"],
+            options_hi: ["<p>केवल निष्कर्ष II अनुसरण करता है।</p>", "<p>निष्कर्ष I और II, दोनों अनुसरण करते हैं।</p>", "<p>केवल निष्कर्ष III अनुसरण करता है।</p>", "<p>केवल निष्कर्ष I अनुसरण करता है।</p>"],
+            solution_en: "<p>2.(b)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1738991568877.png\" alt=\"rId5\" width=\"326\" height=\"94\"><br>Both conclusion I and II follow.</p>",
+            solution_hi: "<p>2.(b)<br><img src=\"https://d2jnyx7x72uicf.cloudfront.net/image_1738991568997.png\" alt=\"rId6\" width=\"362\" height=\"114\"><br>निष्कर्ष I और II दोनों अनुसरण करते हैं।</p>",
+            correct: "b", pos_marks: 2.0, neg_marks: 0.5
+        });
+
+        let currentIdx = 0;
+        let lang = 'en';
+        let userAnswers = new Array(questions.length).fill(null);
+        let status = new Array(questions.length).fill('not-visited');
+        let isSubmitted = false;
+
+        function loadQuestion(idx) {
+            currentIdx = idx;
+            const q = questions[idx];
+            document.getElementById('q-counter').innerText = 'Question ' + (idx + 1) + ' of ' + questions.length;
+            document.getElementById('q-display').innerHTML = q['question_' + lang];
+            const optContainer = document.getElementById('options-display');
+            optContainer.innerHTML = '';
+            const opts = q['options_' + lang];
+            ['a','b','c','d'].forEach((key, i) => {
+                const div = document.createElement('div');
+                div.className = 'option-row' + (userAnswers[idx] === key ? ' selected' : '');
+                div.onclick = () => selectOpt(key);
+                div.innerHTML = '<div class="bullet">' + key.toUpperCase() + '</div>' + opts[i];
+                optContainer.appendChild(div);
+            });
+            const solBox = document.getElementById('solution-display');
+            if(isSubmitted) {
+                solBox.style.display = 'block';
+                document.getElementById('sol-content').innerHTML = q['solution_' + lang];
+            } else { solBox.style.display = 'none'; }
+        }
+
+        function selectOpt(key) { if(isSubmitted) return; userAnswers[currentIdx] = key; status[currentIdx] = 'answered'; loadQuestion(currentIdx); }
+        function next() { if(currentIdx < questions.length - 1) loadQuestion(currentIdx + 1); }
+        function prev() { if(currentIdx > 0) loadQuestion(currentIdx - 1); }
+        function mark() { status[currentIdx] = 'marked'; next(); }
+        function toggleLang() { lang = (lang === 'en' ? 'hi' : 'en'); document.getElementById('lang-text').innerText = (lang === 'en' ? 'HINDI' : 'ENGLISH'); loadQuestion(currentIdx); }
+        function togglePalette() {
+            const drawer = document.getElementById('p-drawer');
+            const overlay = document.getElementById('p-overlay');
+            const grid = document.getElementById('p-grid');
+            grid.innerHTML = '';
+            questions.forEach((q, i) => {
+                const item = document.createElement('div');
+                item.className = 'grid-item ' + status[i] + (i === currentIdx ? ' current' : '');
+                item.innerText = i + 1;
+                item.onclick = () => { loadQuestion(i); togglePalette(); };
+                grid.appendChild(item);
+            });
+            drawer.classList.toggle('open');
+            overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
+        }
+        function submitTest() { isSubmitted = true; document.getElementById('result-screen').style.display = 'block'; }
+        function reviewMode() { document.getElementById('result-screen').style.display = 'none'; loadQuestion(0); }
+        loadQuestion(0);
     </script>
 </body>
 </html>
