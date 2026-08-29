@@ -305,16 +305,26 @@
 
         function nextQ() {
             if (currentIdx < 99) {
-                if (status[currentIdx] === 'not-visited') status[currentIdx] = 'visited';
+                if (status[currentIdx] === 'not-visited' || status[currentIdx] === 'visited') {
+                    if (userAnswers[currentIdx] !== null) status[currentIdx] = 'answered';
+                    else status[currentIdx] = 'visited';
+                }
                 loadQuestion(currentIdx + 1);
             }
         }
 
         function prevQ() {
-            if (currentIdx > 0) loadQuestion(currentIdx - 1);
+            if (currentIdx > 0) {
+                if (status[currentIdx] === 'not-visited') status[currentIdx] = 'visited';
+                loadQuestion(currentIdx - 1);
+            }
         }
 
         function markQ() {
+            status[currentIdx] = 'marked';
+            if (currentIdx < 99) loadQuestion(currentIdx + 1);
+            else loadQuestion(currentIdx);
+        }
             status[currentIdx] = 'marked';
             if (currentIdx < 99) loadQuestion(currentIdx + 1);
             else loadQuestion(currentIdx);
