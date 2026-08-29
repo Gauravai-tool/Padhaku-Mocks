@@ -1,0 +1,18 @@
+{
+  "test_id": "ssc_cgl_sample",
+  "title": "SSC CGL Practice Set",
+  "time_limit_minutes": 60,
+  "questions": [
+    {
+      "id": 1,
+      "section": "6",
+      "q_en": "Pointing to a man, a woman said, 'He is the son of my father's only son.' How is the man related to the woman?",
+      "q_hi": "एक आदमी की ओर इशारा करते हुए, एक महिला ने कहा, 'वह मेरे पिता के इकलौते बेटे का बेटा है।' वह आदमी महिला से कैसे संबंधित है?",
+      "options_en": ["Brother", "Son", "Nephew", "Uncle"],
+      "options_hi": ["भाई", "बेटा", "भतीजा", "चाचा"],
+      "correct_answer": "c",
+      "solution_en": "Woman's father's only son is her brother. His son is her nephew.",
+      "solution_hi": "महिला के पिता का इकलौता बेटा उसका भाई है। उसका बेटा महिला का भतीजा है।"
+    }
+  ]
+}
