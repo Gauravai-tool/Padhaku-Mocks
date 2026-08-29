@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSC CGL Full Mock - Padhaku Mock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1A73E8;
+            --secondary: #F0A93B;
+            --bg: #F0F2F5;
+            --glass: rgba(255, 255, 255, 0.75);
+            --answered: #2E7D32;
+            --marked: #7B1FA2;
+            --skipped: #D32F2F;
+            --visited: #5F6368;
+            --not-visited: #9AA0A6;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png'),
+                              linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+            color: #202124;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header .info h1 { margin: 0; font-size: 16px; font-weight: 700; }
+        .header .info p { margin: 0; font-size: 11px; opacity: 0.9; }
+        .timer {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 18px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* Sections */
+        .sections {
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            overflow-x: auto;
+            padding: 8px;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            backdrop-filter: blur(5px);
+        }
+        .section-tab {
+            padding: 6px 14px;
+            background: #eee;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+            color: #555;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .section-tab.active { background: var(--primary); color: white; }
+
+        /* Main Content */
+        .container { padding: 16px; padding-bottom: 120px; max-width: 600px; margin: auto; }
+
+        .question-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .q-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 8px;
+        }
+
+        .q-text { font-size: 17px; font-weight: 500; line-height: 1.6; margin-bottom: 24px; }
+
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option {
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .option:active { transform: scale(0.98); background: white; }
+        .option.selected {
+            background: rgba(26, 115, 232, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.1);
+        }
+        .opt-id {
+            width: 26px; height: 26px; border: 1px solid #ccc; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 12px; font-size: 12px; font-weight: 700; color: #666;
+        }
+        .selected .opt-id { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Footer */
+        .footer {
+            position: fixed; bottom: 0; width: 100%; background: white;
+            display: flex; padding: 12px 8px; box-sizing: border-box;
+            border-top: 1px solid #ddd; z-index: 100;
+        }
+        .btn {
+            flex: 1; margin: 0 4px; padding: 14px 8px; border: none; border-radius: 8px;
+            font-weight: 700; font-size: 13px; text-transform: uppercase;
+        }
+        .btn-prev { background: #f0f0f0; color: #555; }
+        .btn-mark { background: #FFF3E0; color: #E65100; }
+        .btn-next { background: var(--primary); color: white; }
+
+        /* Palette Drawer */
+        .palette-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 2000; display: none;
+        }
+        .palette-drawer {
+            position: fixed; right: -85%; top: 0; width: 80%; height: 100%;
+            background: white; z-index: 2001; transition: 0.3s;
+            padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        .palette-drawer.open { right: 0; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+        .grid-item {
+            aspect-ratio: 1; border-radius: 4px; display: flex; align-items: center;
+            justify-content: center; font-size: 12px; font-weight: 700;
+            background: #eee; color: #555; cursor: pointer;
+        }
+        .grid-item.answered { background: var(--answered); color: white; }
+        .grid-item.marked { background: var(--marked); color: white; }
+        .grid-item.active { outline: 3px solid var(--primary); }
+
+        .fab {
+            position: fixed; right: 16px; bottom: 80px; width: 56px; height: 56px;
+            background: var(--secondary); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 99; color: white; font-weight: 700;
+        }
+
+        /* Result View */
+        #result-view {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 3000; padding: 40px 20px; text-align: center;
+        }
+        .score-circle {
+            width: 150px; height: 150px; border-radius: 50%; border: 8px solid var(--primary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 20px auto;
+        }
+        .score-val { font-size: 40px; font-weight: 900; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="info">
+            <h1 id="top-title">SSC CGL TIER-1</h1>
+            <p id="top-subtitle">Full Length Mock Test - 01</p>
+        </div>
+        <div class="timer" id="timer-display">60:00</div>
+    </div>
+
+    <div class="sections" id="section-tabs">
+        <div class="section-tab active" onclick="jumpToSection(0)">Reasoning</div>
+        <div class="section-tab" onclick="jumpToSection(25)">General Awareness</div>
+        <div class="section-tab" onclick="jumpToSection(50)">Quant</div>
+        <div class="section-tab" onclick="jumpToSection(75)">English</div>
+    </div>
+
+    <div class="container">
+        <div class="question-card" id="q-card">
+            <div class="q-meta">
+                <span id="q-num-display">Question 1 of 100</span>
+                <span>Marks: <b style="color:green">+2</b> <b style="color:red">-0.5</b></span>
+            </div>
+            <div class="q-text" id="q-text">Loading question...</div>
+            <div class="options" id="options-container">
+                <!-- Options will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="fab" onclick="togglePalette()">P</div>
+
+    <div class="footer">
+        <button class="btn btn-prev" onclick="prevQ()">Previous</button>
+        <button class="btn btn-mark" onclick="markQ()">Mark</button>
+        <button class="btn btn-next" onclick="nextQ()">Save & Next</button>
+    </div>
+
+    <!-- Palette Drawer -->
+    <div class="palette-overlay" id="p-overlay" onclick="togglePalette()"></div>
+    <div class="palette-drawer" id="p-drawer">
+        <h3 style="margin-top:0">Question Palette</h3>
+        <div style="display:flex; gap:10px; font-size:10px; flex-wrap:wrap">
+            <span><i style="background:var(--answered); width:12px; height:12px; display:inline-block"></i> Answered</span>
+            <span><i style="background:var(--marked); width:12px; height:12px; display:inline-block"></i> Marked</span>
+            <span><i style="background:#eee; width:12px; height:12px; display:inline-block"></i> Not Visited</span>
+        </div>
+        <div class="grid" id="palette-grid"></div>
+        <button class="btn btn-next" style="width:100%; margin-top:30px" onclick="submitTest()">Final Submit</button>
+    </div>
+
+    <!-- Result View -->
+    <div id="result-view">
+        <h2 style="color:var(--primary)">Test Submitted Successfully!</h2>
+        <div class="score-circle">
+            <span class="score-val" id="final-score">0</span>
+            <span style="font-size:14px; color:#666">Score</span>
+        </div>
+        <div id="stats" style="margin-top:20px; font-weight:500"></div>
+        <button class="btn btn-next" style="margin-top:40px; width:200px" onclick="location.reload()">Re-attempt</button>
+    </div>
+
+    <script>
+        // Generate 100 Questions dynamically for demo
+        const questions = [];
+        const sections = ["Reasoning", "General Awareness", "Quantitative Aptitude", "English Comprehension"];
+
+        for (let i = 1; i <= 100; i++) {
+            let sectionIndex = Math.floor((i - 1) / 25);
+            questions.push({
+                id: i,
+                section: sections[sectionIndex],
+                text: `[${sections[sectionIndex]}] This is sample question number ${i}. Which of the following is the correct answer for this topic?`,
+                options: ["Option A: Sample Answer", "Option B: Another Choice", "Option C: The Correct One", "Option D: None of these"],
+                correct: 2 // Index of correct option (C)
+            });
+        }
+
+        let currentIdx = 0;
+        let userAnswers = new Array(100).fill(null);
+        let status = new Array(100).fill('not-visited'); // not-visited, answered, marked
+
+        // Initialize UI
+        function loadQuestion(idx) {
+            currentIdx = idx;
+            const q = questions[idx];
+
+            // Update Text
+            document.getElementById('q-num-display').innerText = `Question ${idx + 1} of 100`;
+            document.getElementById('q-text').innerText = q.text;
+
+            // Update Section Tabs
+            document.querySelectorAll('.section-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === Math.floor(idx / 25));
+            });
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = `option ${userAnswers[idx] === i ? 'selected' : ''}`;
+                div.onclick = () => selectOption(i);
+                div.innerHTML = `<div class="opt-id">${String.fromCharCode(65 + i)}</div><div class="opt-text">${opt}</div>`;
+                container.appendChild(div);
+            });
+
+            // Scroll section bar if needed
+            const activeTab = document.querySelector('.section-tab.active');
+            activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        function selectOption(optIdx) {
+            userAnswers[currentIdx] = optIdx;
+            status[currentIdx] = 'answered';
+            loadQuestion(currentIdx);
+        }
+
+        function nextQ() {
+            if (currentIdx < 99) {
+                if (status[currentIdx] === 'not-visited') status[currentIdx] = 'visited';
+                loadQuestion(currentIdx + 1);
+            }
+        }
+
+        function prevQ() {
+            if (currentIdx > 0) loadQuestion(currentIdx - 1);
+        }
+
+        function markQ() {
+            status[currentIdx] = 'marked';
+            if (currentIdx < 99) loadQuestion(currentIdx + 1);
+            else loadQuestion(currentIdx);
+        }
+
+        function jumpToSection(idx) {
+            loadQuestion(idx);
+        }
+
+        // Palette Logic
+        function togglePalette() {
+            const drawer = document.getElementById('p-drawer');
+            const overlay = document.getElementById('p-overlay');
+            const grid = document.getElementById('palette-grid');
+
+            grid.innerHTML = '';
+            for (let i = 0; i < 100; i++) {
+                const item = document.createElement('div');
+                item.className = `grid-item ${status[i]} ${i === currentIdx ? 'active' : ''}`;
+                item.innerText = i + 1;
+                item.onclick = () => { loadQuestion(i); togglePalette(); };
+                grid.appendChild(item);
+            }
+
+            drawer.classList.toggle('open');
+            overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none';
+        }
+
+        // Timer Logic
+        let timeLeft = 60 * 60;
+        const timerInt = setInterval(() => {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if (timeLeft <= 0) { clearInterval(timerInt); submitTest(); }
+            timeLeft--;
+        }, 1000);
+
+        function submitTest() {
+            clearInterval(timerInt);
+            let score = 0;
+            let correct = 0;
+            let incorrect = 0;
+            let skipped = 0;
+
+            userAnswers.forEach((ans, i) => {
+                if (ans === null) skipped++;
+                else if (ans === questions[i].correct) {
+                    score += 2;
+                    correct++;
+                } else {
+                    score -= 0.5;
+                    incorrect++;
+                }
+            });
+
+            document.getElementById('result-view').style.display = 'block';
+            document.getElementById('final-score').innerText = score.toFixed(1);
+            document.getElementById('stats').innerHTML = `
+                <p style="color:green">Correct: ${correct}</p>
+                <p style="color:red">Incorrect: ${incorrect}</p>
+                <p style="color:gray">Skipped: ${skipped}</p>
+            `;
+        }
+
+        loadQuestion(0);
+    </script>
+</body>
+</html>
